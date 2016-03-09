@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>用友开放平台demo</title>
+</head>
+<body>
+<script type="text/javascript" src="./js/jquery-1.11.1.js"></script> 
+<script type="text/javascript" src="./js/jquery.md5.js"></script> 
+<div class="fm-center" >
+  <div style="float:left;">
+     
+     <table style="margin-top: 25px" border="0">
+     	<tr>
+	    	<td colspan="2">填写开放平台信息</td>
+	    </tr>
+    	<tr>
+    		<td align="right">地址：</td>
+    		<td><input type="text" style="width:250px;" id="store_url" name="store_url" value="http://gw.api.yonyou.com/gateway"/></td>  
+    	</tr>
+    	
+		<tr>
+           <td align="right">返回格式：</td>
+           <td>
+			   <select id="resultType" name="resultType" style="width:250px;">                   
+                   <option value="json">JSON</option>
+                   <option value="xml">XML</option>
+               </select>
+           </td>
+        </tr>
+        <tr>
+            <td align="right">appKey：</td>
+			<td><input type="text" style="width:250px;" id="appKey" name="appKey" value="Xb9tE" ></td>  
+        </tr>
+		<tr>
+             <td align="right">accessToken：</td>
+			<td><input type="text" style="width:250px;" id="accessToken" name="accessToken" value="1444c11d-2cd2-4bd1-9dc7-69a792c92c18" ></td>  
+           </tr>
+		<tr>
+		<tr>
+	    	<td colspan="2">填写NC信息</td>
+	    </tr>
+		<tr>
+            <td align="right">uap_dataSource：</td>
+			<td><input type="text" style="width:250px;" id="uap_dataSource" name="uap_dataSource" value="nc65user" ></td>  
+        </tr>
+        <tr>
+            <td align="right">uap_usercode：</td>
+			<td><input type="text" style="width:250px;" id="uap_usercode" name="uap_usercode" value="licc" ></td>  
+        </tr>
+        <tr>
+            <td align="right">uap_token：</td>
+			<td><input type="text" style="width:250px;" id="uap_token" name="uap_token" value="123456" >
+			</td>  
+        </tr>
+        <tr>
+	    	<td colspan="2">登陆NC</td>
+	    </tr>
+	    <tr>
+           <td align="right">api_url_login：</td>
+		   <td><input type="text" style="width:250px;" id="api_url_login" name="api_url_login" value="/scmbase/1.0/userlogin" ></td>  
+        </tr> 
+        <tr>
+           <td align="right">uap_userpassword：</td>
+		   <td><input type="text" style="width:250px;" id="uap_userpassword" name="uap_userpassword" value="nc1234" ></td>  
+        </tr> 
+        <tr>
+             <td align="right">提交方式：</td>
+             <td>
+             	<label><input type="radio" id="method_post_login" name="sip_http_method_login" value="2" checked> POST</label>
+                <label><input style="margin-left:20px" type="radio" id="method_get_login" name="sip_http_method_login" value="1"> GET</label>
+             </td>
+           </tr>
+        <tr>
+	    	<td colspan="2" align="center"><input name="button" type="button"  id="apiButtonLogin"  onClick="login();this.blur();" value="登录NC"></td>
+	    </tr> 
+	    <tr>
+	    	<td colspan="2">查询销售订单</td>
+	    </tr>
+	     <tr>
+           <td align="right">api_url_querysoorder：</td>
+		   <td><input type="text" style="width:250px;" id="api_url_querysoorder" name="api_url_querysoorder" value="/so/1.0/queryorder" ></td>  
+        </tr> 
+        <tr>
+           <td align="right">orgcode(销售组织编码)：</td>
+		   <td><input type="text" style="width:250px;" id="orgcode" name="orgcode" value="T300502" ></td>  
+        </tr>
+        <tr>
+           <td align="right">vbillcode(销售订单单据号)：</td>
+		   <td><input type="text" style="width:250px;" id="vbillcode" name="vbillcode" value="SO302015040700000028" ></td>  
+        </tr>
+        <tr>
+             <td align="right">提交方式：</td>
+             <td>
+             	<label><input type="radio" id="method_post_query" name="sip_http_method_query" value="2" > POST</label>
+                <label><input style="margin-left:20px" type="radio" id="method_get_query" name="sip_http_method_query" value="1" checked> GET</label>
+             </td>
+           </tr> 
+        <tr>
+	    	<td colspan="2" align="center"><input name="button" type="button"  id="apiButtonQuery"  onClick="queryOrder();this.blur();" value="查询销售订单"></td>
+	    </tr> 
+		</table>
+  </div>
+  <div style="float:left;">     
+      <table style="margin-top:30px">  
+      <td width="0">&nbsp;</td>
+	  <td  style="padding-left:20px;" valign="top"> 	         
+             API返回结果： 
+			<br>
+                <textarea name="resultShow" id="resultShow" style="resize:none;width:700px" cols="90" rows="10" readonly></textarea>
+            <br />            
+        </td>
+      </table>  
+  </div>
+</div>
+<script type="text/javascript"> 
+		var appKey = '';
+		var accessToken = '';
+		var store_url = '';
+		var uap_dataSource = '';
+		var uap_usercode = '';
+		var uap_token = '';
+
+	function login(){		    
+		if(!check()){
+			return false;
+		}
+		var uap_userpassword = document.getElementById('uap_userpassword').value.trim();
+		var api_url_login = document.getElementById('api_url_login').value.trim();
+		
+		document.getElementById('resultShow').value = '';
+		
+		if ('' == uap_userpassword){
+			 alert('请输入uap_userpassword');
+			$("#uap_userpassword").focus();
+			return false;
+		}
+		if ('' == api_url_login){
+			 alert('请输入api_url_login');
+			$("#api_url_login").focus();
+			return false;
+		}		
+		
+		var date = new Date();
+		var time = 0;
+		var strTime = date.getTime() + "";
+		strTime = strTime.substring(0, 9);		
+	    var oauthString=appKey + strTime + accessToken;		 
+		var oauth = MD5(oauthString);
+		var headers = {};
+		var formData = new Object();
+		headers.appKey = appKey;
+		headers.oauth = oauth;
+		headers.uap_dataSource=uap_dataSource;
+		headers.uap_usercode=uap_usercode;
+		headers.uap_token=uap_token;
+		formData="{'usercode':'"+uap_usercode+"','pwd':'"+uap_userpassword+"'}";
+		var url =store_url+api_url_login;
+		if (document.getElementsByName('sip_http_method_login')[0].checked){
+			sendApiRequest('POST',url,oauth,headers,formData,strTime);
+		} else {
+			sendApiRequest('GET', selectedApiName,selectedApiVersion,selectedResourceName,oauth,appKey,strTime);
+		}
+	}
+	function queryOrder(){	
+		if(!check()){
+			return false;
+		}		    
+		var api_url_querysoorder = document.getElementById('api_url_querysoorder').value.trim();
+		var orgcode = document.getElementById('orgcode').value.trim();
+		var vbillcode = document.getElementById('vbillcode').value.trim();		
+		
+		document.getElementById('resultShow').value = '';
+		
+		if ('' == api_url_querysoorder){
+			 alert('请输入api_url_querysoorder');
+			$("#api_url_querysoorder").focus();
+			return false;
+		}
+		if ('' == orgcode){
+			 alert('请输入orgcode');
+			$("#orgcode").focus();
+			return false;
+		}
+		if ('' == vbillcode){
+			 alert('请输入vbillcode');
+			$("#vbillcode").focus();
+			return false;
+		}
+		
+		
+		var date = new Date();
+		var time = 0;
+		var strTime = date.getTime() + "";
+		strTime = strTime.substring(0, 9);		
+	    var oauthString=appKey + strTime + accessToken;		 
+		var oauth = MD5(oauthString);
+		var headers = {};
+		var formData = new Object();
+		headers.appKey = appKey;
+		headers.oauth = oauth;
+		headers.uap_dataSource=uap_dataSource;
+		headers.uap_usercode=uap_usercode;
+		headers.uap_token=uap_token;
+		formData["orgcode"]=orgcode;
+		formData["vbillcode"]=vbillcode;
+		var url =store_url+api_url_querysoorder;
+		if (document.getElementsByName('sip_http_method_query')[0].checked){
+			sendApiRequest('POST',url,oauth,headers,formData,strTime);
+		} else {
+			sendApiRequest('GET',url,oauth,headers,formData,strTime);
+		}
+	}
+	
+	function check(){
+		appKey = document.getElementById('appKey').value.trim();
+		accessToken = document.getElementById('accessToken').value.trim();
+		store_url = document.getElementById('store_url').value.trim();
+		uap_dataSource = document.getElementById('uap_dataSource').value.trim();
+		uap_usercode = document.getElementById('uap_usercode').value.trim();
+		uap_token = document.getElementById('uap_token').value.trim();
+		if ('' == appKey){
+			alert('请输入appKey');
+			$("#appKey").focus();
+			return false;
+		}
+		if ('' == accessToken){
+			alert('请输入accessToken');
+			$("#accessToken").focus();
+			return false;
+		}
+		if ('' == store_url){
+			 alert('请输入store_url');
+			$("#store_url").focus();
+			return false;
+		}
+		if ('' == uap_dataSource){
+			 alert('请输入uap_dataSource');
+			$("#uap_dataSource").focus();
+			return false;
+		}
+		if ('' == uap_usercode){
+			 alert('请输入uap_usercode');
+			$("#uap_usercode").focus();
+			return false;
+		}
+		if ('' == uap_token){
+			 alert('请输入uap_token');
+			$("#uap_token").focus();
+			return false;
+		}
+		return true;
+	}
+	
+	
+	/*
+	 * 发送请求
+	 */
+	function sendApiRequest(sip_http_method, url,oauth,headers,formData,strTime){	
+		var format = document.getElementById('resultType').value;	
+		
+		if("POST"==sip_http_method){
+			headers["content-type"]="application/json";
+		}
+		
+		var settings = {
+			url : url+"?resultType="+format+"&timestamp="+strTime,
+	        type: sip_http_method,
+	        dataType:"json",
+	        error: function(result,textStatus,errorThrown) {
+	             //alert("调用失败！");
+		    	failHandleApiResponse(result);
+	        },
+	        success: function(data, textStatus) {
+	        	handleApiResponse(data,url)
+	        },
+	        headers : headers,
+	        data : formData
+	    };
+		$.ajax(settings);	
+	}
+	
+	function handleApiResponse(result,url) {
+		var response = result["message"];	
+		$("#resultShow").val(response);	
+		if(url.indexOf('login')>0){
+		var responsejson=eval("("+response+")");
+		$("#uap_token").val(responsejson.uap_token);
+		}
+	}	
+	
+	function failHandleApiResponse(result){
+		var response = result["message"];	
+		$("#resultShow").val(response);
+	}
+ </script>								
+</body>
+</html>
+
