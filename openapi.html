@@ -15,7 +15,7 @@
 	    </tr>
     	<tr>
     		<td align="right">地址：</td>
-    		<td><input type="text" style="width:250px;" id="store_url" name="store_url" value="http://gw.api.yonyou.com/gateway"/></td>  
+    		<td><input type="text" style="width:250px;" id="store_url" name="store_url" value="http://gw.api.yonyou.com/gateway/demo"/></td>  
     	</tr>
     	
 		<tr>
@@ -29,11 +29,11 @@
         </tr>
         <tr>
             <td align="right">appKey：</td>
-			<td><input type="text" style="width:250px;" id="appKey" name="appKey" value="Xb9tE" ></td>  
+			<td><input type="text" style="width:250px;" id="appKey" name="appKey" value="UtwLQ" ></td>  
         </tr>
 		<tr>
              <td align="right">accessToken：</td>
-			<td><input type="text" style="width:250px;" id="accessToken" name="accessToken" value="1444c11d-2cd2-4bd1-9dc7-69a792c92c18" ></td>  
+			<td><input type="text" style="width:250px;" id="accessToken" name="accessToken" value="2221f1ba-c563-4d8e-8e69-205a71a57ec8" ></td>  
            </tr>
 		<tr>
 		<tr>
@@ -57,7 +57,7 @@
 	    </tr>
 	    <tr>
            <td align="right">api_url_login：</td>
-		   <td><input type="text" style="width:250px;" id="api_url_login" name="api_url_login" value="/scmbase/1.0/userlogin" ></td>  
+		   <td><input type="text" style="width:250px;" id="api_url_login" name="api_url_login" value="/user/login" ></td>  
         </tr> 
         <tr>
            <td align="right">uap_userpassword：</td>
@@ -78,7 +78,7 @@
 	    </tr>
 	     <tr>
            <td align="right">api_url_querysoorder：</td>
-		   <td><input type="text" style="width:250px;" id="api_url_querysoorder" name="api_url_querysoorder" value="/so/1.0/queryorder" ></td>  
+		   <td><input type="text" style="width:250px;" id="api_url_querysoorder" name="api_url_querysoorder" value="/saleorder/bybillcode" ></td>  
         </tr> 
         <tr>
            <td align="right">orgcode(销售组织编码)：</td>
@@ -280,17 +280,24 @@
 	}
 	
 	function handleApiResponse(result,url) {
-		var response = result["message"];	
-		$("#resultShow").val(response);	
-		if(url.indexOf('login')>0){
-		var responsejson=eval("("+response+")");
-		$("#uap_token").val(responsejson.uap_token);
+		var status = result["statuscode"];	
+		if('0'==status){
+			var data= result["data"];
+			$("#resultShow").val(data);	
+			if(url.indexOf('login')>0){
+				var responsejson=eval("("+data+")");
+				$("#uap_token").val(responsejson.uap_token);
+			}
+			return;
 		}
+		var errormsg = result["errormsg"];
+		var errordetailmsg = result["errordetailmsg"];
+		$("#resultShow").val("异常编码"+status+"; 异常信息："+errormsg+"; 异常详细信息："+errordetailmsg);	
+				
 	}	
 	
-	function failHandleApiResponse(result){
-		var response = result["message"];	
-		$("#resultShow").val(response);
+	function failHandleApiResponse(result){	
+		$("#resultShow").val(result);
 	}
  </script>								
 </body>
